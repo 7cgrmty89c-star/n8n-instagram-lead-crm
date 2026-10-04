@@ -1,0 +1,218 @@
+{
+  "name": "Instagram Lead CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "instagram-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a787c103-4287-42e6-ab64-52fe8bca93e1",
+      "name": "Webhook",
+      "webhookId": "eae8251f-41da-45a3-a776-764b5de11d06"
+    },
+    {
+      "parameters": {
+        "jsCode": "const username = $json.body.username;\nconst message = $json.body.message;\nconst waNumber = \"48123456789\";\nconst text = encodeURIComponent(\"Czesc, tu \" + username + \" z Instagrama. \" + message);\n\nreturn [{\n  json: {\n    username: username,\n    message: message,\n    status: \"new\",\n    whatsapp_link: \"https://wa.me/\" + waNumber + \"?text=\" + text\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "68060be5-bbf6-485b-8b8b-99aec177c2ac",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "RaSq9lXekEOQevP5",
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "/projects/YduoE8VhdVVdHU31/datatables/RaSq9lXekEOQevP5"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "username": "={{ $('Code in JavaScript').item.json.username }}",
+            "message": "={{ $('Code in JavaScript').item.json.message }}",
+            "status": "={{ $('Code in JavaScript').item.json.status }}",
+            "whatsapp_link": "={{ $('Code in JavaScript').item.json.whatsapp_link }}",
+            "reply": "={{ $json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_link",
+              "displayName": "whatsapp_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reply",
+              "displayName": "reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "1a0df5fb-4e84-4e0c-a5a0-68135e1868ac",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Jesteś asystentem sprzedaży firmy. Odpowiadasz po polsku, w 2-3 zdaniach, uprzejmie. Odpowiedz na pytanie klienta i zaproś go do rozmowy na WhatsApp. Nie podawaj cen ani obietnic, jeśli ich nie znasz."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "45430610-828a-4aa1-8e5d-987f8ff5a510",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.8-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        208
+      ],
+      "id": "73a9df55-cce1-4d3b-8ae7-d15cd02de33f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1HXu8GNELUHfkhvY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a3c8a7c4-4c59-4dc5-b16e-dd4a382ce32c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0b8714b8d094c304ed4632059f9e2351dcc070fb2c64919cd1878bd3544863a0"
+  },
+  "nodeGroups": [],
+  "id": "tSDzVwmXN2BOifq4",
+  "tags": []
+}

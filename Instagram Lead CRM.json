@@ -109,7 +109,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        832,
+        800,
         0
       ],
       "id": "1a0df5fb-4e84-4e0c-a5a0-68135e1868ac",
@@ -142,8 +142,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        320,
-        208
+        528,
+        240
       ],
       "id": "73a9df55-cce1-4d3b-8ae7-d15cd02de33f",
       "name": "Google Gemini Chat Model",
@@ -151,6 +151,30 @@
         "googlePalmApi": {
           "id": "1HXu8GNELUHfkhvY",
           "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6717049759",
+        "text": "=Nowy lead: {{ $('Code in JavaScript').item.json.username }}\nWiadomość: {{ $('Code in JavaScript').item.json.message }}\nWhatsApp: {{ $('Code in JavaScript').item.json.whatsapp_link }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "362dc4c9-c6a2-4458-87be-afa6f5ae15b0",
+      "name": "Send a text message",
+      "webhookId": "5ce327fc-bef8-429b-8a3b-7a42a98d46ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "nTKRUARrhn2a3gLw",
+          "name": "Telegram account"
         }
       }
     }
@@ -200,6 +224,17 @@
           }
         ]
       ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -207,7 +242,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "a3c8a7c4-4c59-4dc5-b16e-dd4a382ce32c",
+  "versionId": "6a2b52f0-b8d9-4da4-87c1-1e9e93461f3d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0b8714b8d094c304ed4632059f9e2351dcc070fb2c64919cd1878bd3544863a0"
